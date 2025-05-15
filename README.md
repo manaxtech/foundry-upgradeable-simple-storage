@@ -1,66 +1,81 @@
-## Foundry
+# UPGRADEABLE STORAGE
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A comprehensive demonstration of Solidity patterns including storage management, inheritance, UUPS upgrades, delegate calls, and proxy implementations. Built with Foundry.
 
-Foundry consists of:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Core Contracts
 
-## Documentation
+### 1. Storage Contracts
 
-https://book.getfoundry.sh/
+#### SimpleStorage
+- Stores numbers and person structs (name + favorite number)
+- Features:
+  - `store()` and `addPerson()` function for storing name and favoriteNumber
+  - Multiple getter patterns
+  - Euclidean algorithm utility
 
-## Usage
+#### AddFiveStorage (inherits SimpleStorage)
+- Overrides `store()` to add 5 to all inputs
+- Maintains all parent functionality
 
-### Build
+### 2. Upgradeable Implementations
 
-```shell
-$ forge build
-```
+#### UUPSUSimpleStorage (inherits simpleStorage)
+- UUPS upgradeable version
+- Initializes with value 3 to be stored in `myFavoriteNumber`
+- Ownable upgrade authorization
 
-### Test
+#### UUPSUAddFiveStorage (inherits AddFiveStorage)
+- UUPS upgradeable +5 version
+- Reinitializable (version 2) with value 5 (+5 effect)
 
-```shell
-$ forge test
-```
+### 3. Proxy & Delegate Call Systems
 
-### Format
+#### DelegateUpgradeable
+**Demonstrates:**
+- Target contract with multiple storage variables
+- Proxy contract using delegatecall to:
+  - Modify storage in context of proxy
+  - Preserve msg.sender and msg.value
+- Dynamic function calling with:
+  - `abi.encodeWithSignature`
+  - Raw function selector calculation
 
-```shell
-$ forge fmt
-```
+**Key Features:**
+- Shows storage slot preservation
+- Error handling for failed calls
+- Payable function delegation
 
-### Gas Snapshots
+#### SmallProxy
+**Minimal Upgradeable Proxy:**
+- Implements EIP-1967 storage slot
+- Assembly-level implementation:
+  - `sstore`/`sload` for implementation address
+  - Storage slot inspection methods
+- Features:
+  - `setImplementation()` for upgrades
+  - Storage inspection functions
+  - Data encoding helper
 
-```shell
-$ forge snapshot
-```
+## Key Patterns Demonstrated
 
-### Anvil
+1. **Delegate Call Pattern**
+   - Execute logic in target contract's context
+   - Preserves proxy's storage layout
+   - Shows msg.sender/value preservation
 
-```shell
-$ anvil
-```
+2. **Proxy Upgrade Pattern**
+   - EIP-1967 implementation slot
+   - Storage slot collision prevention
+   - Minimal proxy implementation
 
-### Deploy
+3. **UUPS Upgrade Pattern**
+   - Gas-efficient upgrades
+   - Upgrade authorization via ownership
+   - Versioned initialization
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+## Quick Start
 
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+```bash
+make all  # Installs dependencies, compiles, and runs tests
 ```

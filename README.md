@@ -81,5 +81,5 @@ git clone https://github.com/manaxtech/foundry-upgradeable-simple-storage.git
 ```
 
 ```bash
-make all  # Installs dependencies, compiles, and runs tests
+make all  # Installs dependencies, compiles
 ```
